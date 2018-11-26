@@ -6,6 +6,11 @@
  * - returns undefined if no matching book is found
  ****************************************************************/
 function getBookById(bookId, books) {
+  let foundBook = books.find(book => {
+    return book.id === bookId;
+  });
+  return foundBook;
+  //return undefined;
   // Your code goes here
 }
 
@@ -17,6 +22,11 @@ function getBookById(bookId, books) {
  * - returns undefined if no matching author is found
  ****************************************************************/
 function getAuthorByName(authorName, authors) {
+  let foundAuthor = authors.find(author => {
+    return author.name.toUpperCase() === authorName.toUpperCase();
+  });
+  return foundAuthor;
+
   // Your code goes here
 }
 
@@ -27,6 +37,9 @@ function getAuthorByName(authorName, authors) {
  *    [{ author: <NAME>, bookCount: <NUMBER_OF_BOOKS> }]
  ****************************************************************/
 function bookCountsByAuthor(authors) {
+  return authors.map(author => {
+    return { author: author.name, bookCount: author.books.length };
+  });
   // Your code goes here
 }
 
@@ -39,7 +52,10 @@ function bookCountsByAuthor(authors) {
  ****************************************************************/
 function booksByColor(books) {
   const colors = {};
-
+  books.forEach(book => {
+    if (!colors[book.color]) colors[book.color] = [];
+    colors[book.color].push(book.title);
+  });
   // Your code goes here
 
   return colors;
@@ -54,7 +70,24 @@ function booksByColor(books) {
  *    ["The Hitchhikers Guide", "The Meaning of Liff"]
  ****************************************************************/
 function titlesByAuthorName(authorName, authors, books) {
-  // Your code goes here
+  const titlesBy = [];
+  //function getBookById(bookId, books) {
+  if (getAuthorByName(authorName, authors)) {
+    getAuthorByName(authorName, authors).books.forEach(book => {
+      titlesBy.push(getBookById(book, books).title);
+    });
+  }
+  return titlesBy;
+  //authors.forEach(author => {return author.name.toUpperCase() === authorName.toUpperCase()})
+  //authors.findIndex(return authorName === author.name)
+
+  // titlesBy.push(
+  //   books.forEach(book => {
+  //     return book.authors.name === authorName;
+  //   })
+  // );
+  // return titlesBy;
+  // // Your code goes here
 }
 
 /**************************************************************
@@ -65,6 +98,15 @@ function titlesByAuthorName(authorName, authors, books) {
  * Note: assume there will never be a tie
  ****************************************************************/
 function mostProlificAuthor(authors) {
+  let count = 0;
+  let proAuthor;
+  authors.forEach(author => {
+    if (author.books.length > count) {
+      count = author.books.length;
+      proAuthor = author.name;
+    }
+  });
+  return proAuthor;
   // Your code goes here
 }
 
@@ -92,7 +134,14 @@ function mostProlificAuthor(authors) {
  * BONUS: REMOVE DUPLICATE BOOKS
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
-  // Your code goes here
+  let authorBooks = [];
+  let ogBook = getBookById(bookId, books);
+  ogBook.authors.forEach(author => {
+    titlesByAuthorName(author.name, authors, books).forEach(find =>
+      authorBooks.push(find)
+    );
+  });
+  return authorBooks;
 }
 
 /**************************************************************
@@ -102,9 +151,30 @@ function relatedBooks(bookId, authors, books) {
  *   co-authored the greatest number of books
  ****************************************************************/
 function friendliestAuthor(authors) {
-  // Your code goes here
+  let curCount;
+  let maxCount = 0;
+  let coestName;
+
+  authors.forEach(author => {
+    curCount = 0;
+    authorCo[author.name] = 0;
+    authors.forEach(otherAuthor => {
+      author.books.forEach(bookID => {
+        if (otherAuthor.name !== author.name) {
+          if (otherAuthor.books.includes(bookID)) curCount += 1;
+        }
+      });
+    });
+    if (curCount > maxCount) {
+      maxCount = curCount;
+      coestName = author.name;
+    }
+  });
+  //console.log(authorCo);
+  return coestName;
 }
 
+// Your code goes here
 module.exports = {
   getBookById,
   getAuthorByName,
